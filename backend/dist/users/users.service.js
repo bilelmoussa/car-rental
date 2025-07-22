@@ -18,6 +18,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 const bcrypt = require("bcrypt");
+const Role_1 = require("./Role");
 let UsersService = class UsersService {
     userRepository;
     constructor(userRepository) {
@@ -32,15 +33,19 @@ let UsersService = class UsersService {
     async findByEmail(email) {
         return await this.userRepository.findOne({ where: { email } });
     }
-    async create(createUserDto) {
-        const { email, password } = createUserDto;
+    async createCompanyOwnerUser(createCompanyOwnerDto) {
+        const { email, password } = createCompanyOwnerDto;
         const hashedPassword = await this.hashData(password);
         const newUser = this.userRepository.create({
-            ...createUserDto,
+            firstName: createCompanyOwnerDto.firstName,
+            lastName: createCompanyOwnerDto.lastName,
             password: hashedPassword,
             email: email.toLowerCase(),
+            gender: createCompanyOwnerDto.gender,
+            role: Role_1.Role.CompanyOwner,
         });
-        return newUser;
+        const savedUser = await this.userRepository.save(newUser);
+        return savedUser;
     }
 };
 exports.UsersService = UsersService;

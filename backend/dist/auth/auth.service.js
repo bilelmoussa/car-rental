@@ -18,12 +18,18 @@ let AuthService = class AuthService {
         this.usersService = usersService;
     }
     async signupB2b(dto) {
-        const { email } = dto;
+        const { firstName, lastName, email, gender, password, } = dto;
         const emailInUse = await this.usersService.findByEmail(email);
         if (emailInUse) {
             throw new common_1.BadRequestException("User already exist!");
         }
-        const newUser = await this.usersService.create(dto);
+        const newUser = await this.usersService.createCompanyOwnerUser({
+            firstName,
+            lastName,
+            email,
+            gender,
+            password,
+        });
         return newUser;
     }
 };

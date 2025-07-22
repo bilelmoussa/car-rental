@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CompanyService } from 'src/company/company.service';
+import { Role } from 'src/users/Role';
 import { B2BSignUpDto } from 'src/users/signup.dto';
 import { UsersService } from 'src/users/users.service';
 
@@ -11,7 +12,13 @@ export class AuthService {
   ) { }
 
   async signupB2b(dto: B2BSignUpDto) {
-    const { email } = dto;
+    const {
+      firstName,
+      lastName,
+      email,
+      gender,
+      password,
+    } = dto;
 
     const emailInUse = await this.usersService.findByEmail(email);
 
@@ -19,7 +26,13 @@ export class AuthService {
       throw new BadRequestException("User already exist!");
     }
 
-    const newUser = await this.usersService.create(dto);
+    const newUser = await this.usersService.createCompanyOwnerUser({
+      firstName,
+      lastName,
+      email,
+      gender,
+      password,
+    });
 
     return newUser;
   }

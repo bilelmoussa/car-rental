@@ -12,7 +12,7 @@ export declare class User {
     dateOfBirth?: Date;
     phoneNumber?: string;
     country?: string;
-    company: Company;
+    company?: Company;
     createdAt: Date;
     updatedAt: Date;
 }

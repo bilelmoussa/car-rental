@@ -13,7 +13,7 @@ import { Company } from 'src/company/company.entity';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @Column()
@@ -45,7 +45,7 @@ export class User {
   country?: string;
 
   @ManyToOne(() => Company, (company) => company.users)
-  company: Company;
+  company?: Company;
 
   @CreateDateColumn()
   createdAt: Date;

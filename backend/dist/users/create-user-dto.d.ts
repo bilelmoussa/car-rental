@@ -1,5 +1,8 @@
+import { Gender } from "./Gender";
 export declare class CreateUserDto {
-    fullName: string;
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
+    gender: Gender;
 }

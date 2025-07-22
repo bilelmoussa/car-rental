@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { B2BSignUpDto } from './signup.dto';
+import { Role } from './Role';
+import { CreateCompanyOwner } from './create-company-owner-dto';
 
 @Injectable()
 export class UsersService {
@@ -24,20 +26,23 @@ export class UsersService {
     return await this.userRepository.findOne({ where: { email } });
   }
 
-  async create(createUserDto: B2BSignUpDto) {
-    const { email, password } = createUserDto;
+  async createCompanyOwnerUser(createCompanyOwnerDto: CreateCompanyOwner) {
+    const { email, password } = createCompanyOwnerDto;
 
     const hashedPassword = await this.hashData(password);
 
     const newUser = this.userRepository.create({
-      ...createUserDto,
+      firstName: createCompanyOwnerDto.firstName,
+      lastName: createCompanyOwnerDto.lastName,
       password: hashedPassword,
       email: email.toLowerCase(),
+      gender: createCompanyOwnerDto.gender,
+      role: Role.CompanyOwner,
     });
 
-    //await this.userRepository.save(newUser);
+    const savedUser = await this.userRepository.save(newUser);
 
-    return newUser;
+    return savedUser;
   }
 
 //
