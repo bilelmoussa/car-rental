@@ -15,6 +15,8 @@ const users_module_1 = require("./users/users.module");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
 const user_entity_1 = require("./users/user.entity");
+const company_module_1 = require("./company/company.module");
+const company_entity_1 = require("./company/company.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -30,13 +32,15 @@ exports.AppModule = AppModule = __decorate([
                 port: parseInt(process.env.POSTGRES_PORT || '5432'),
                 password: process.env.POSTGRES_PASSWORD,
                 username: process.env.POSTGRES_USER,
-                entities: [user_entity_1.User],
+                entities: [user_entity_1.User, company_entity_1.Company],
                 database: process.env.POSTGRES_DATABASE,
                 synchronize: true,
-                logging: true,
+                logging: false,
+                autoLoadEntities: true,
             }),
             auth_module_1.AuthModule,
-            users_module_1.UsersModule
+            users_module_1.UsersModule,
+            company_module_1.CompanyModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./create-user-dto";
 
@@ -13,9 +13,8 @@ export class UsersController {
     return this.userService.findAllUser();
   }
 
-  @Post("/add")
-  addUser(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createUser(createUserDto);
+  @Get("/hi")
+  getHi() {
+    return { message: "Hello Bilel from docker" };
   }
-
 }
