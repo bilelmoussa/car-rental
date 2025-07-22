@@ -2,7 +2,7 @@ import { Gender } from './Gender';
 import { Role } from './Role';
 import { Company } from 'src/company/company.entity';
 export declare class User {
-    id: number;
+    id: string;
     firstName: string;
     lastName: string;
     email: string;

@@ -14,7 +14,7 @@ import { Company } from 'src/company/company.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column()
   firstName: string;
@@ -31,7 +31,7 @@ export class User {
   @Column({ type: "enum", enum: Role, default: Role.Customer })
   role: Role;
 
-  @Column()
+  @Column({ select: false })
   @Exclude()
   password: string;
 

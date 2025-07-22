@@ -9,10 +9,10 @@ export class Company {
   @Column()
   name: string;
 
-  @ManyToOne(() => User, { eager: true, nullable: false })
-  ownerId: User;
+  @ManyToOne(() => User, (user) => user.company, { nullable: false, onDelete: 'SET NULL', eager: true })
+  user: User;
 
-  @OneToMany(() => User, (user) => user.company)
+  @OneToMany(() => User, (user) => user.company, { eager: false })
   users: User[]
 
   @Column()

@@ -11,14 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
+const company_service_1 = require("../company/company.service");
 const users_service_1 = require("../users/users.service");
 let AuthService = class AuthService {
     usersService;
-    constructor(usersService) {
+    companyService;
+    constructor(usersService, companyService) {
         this.usersService = usersService;
+        this.companyService = companyService;
     }
     async signupB2b(dto) {
-        const { firstName, lastName, email, gender, password, } = dto;
+        const { firstName, lastName, email, gender, password, companyName, address, country, phoneNumber, } = dto;
         const emailInUse = await this.usersService.findByEmail(email);
         if (emailInUse) {
             throw new common_1.BadRequestException("User already exist!");
@@ -30,12 +33,21 @@ let AuthService = class AuthService {
             gender,
             password,
         });
-        return newUser;
+        const newCompany = await this.companyService.createCompany({
+            name: companyName,
+            address,
+            country,
+            phoneNumber,
+            owner: newUser
+        });
+        console.log(newCompany);
+        return { user: newUser, company: newCompany };
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService])
+    __metadata("design:paramtypes", [users_service_1.UsersService,
+        company_service_1.CompanyService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map
