@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { User } from './users/user.entity';
 import { CompanyModule } from './company/company.module';
 import { Company } from './company/company.entity';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 
 @Module({
@@ -32,6 +34,16 @@ import { Company } from './company/company.entity';
     CompanyModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    }
+  ],
 })
 export class AppModule { }

@@ -27,6 +27,8 @@ let User = class User {
     phoneNumber;
     country;
     company;
+    refreshToken;
+    refreshTokenExpiresAt;
     createdAt;
     updatedAt;
 };
@@ -76,6 +78,16 @@ __decorate([
     (0, typeorm_1.ManyToOne)(() => company_entity_1.Company, (company) => company.users),
     __metadata("design:type", company_entity_1.Company)
 ], User.prototype, "company", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    (0, class_transformer_1.Exclude)(),
+    __metadata("design:type", Object)
+], User.prototype, "refreshToken", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    (0, class_transformer_1.Exclude)(),
+    __metadata("design:type", Object)
+], User.prototype, "refreshTokenExpiresAt", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

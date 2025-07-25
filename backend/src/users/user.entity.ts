@@ -47,6 +47,14 @@ export class User {
   @ManyToOne(() => Company, (company) => company.users)
   company?: Company;
 
+  @Column({ type: 'text', nullable: true })
+  @Exclude()
+  refreshToken: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  @Exclude()
+  refreshTokenExpiresAt: Date | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

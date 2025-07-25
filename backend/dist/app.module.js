@@ -17,6 +17,8 @@ const config_1 = require("@nestjs/config");
 const user_entity_1 = require("./users/user.entity");
 const company_module_1 = require("./company/company.module");
 const company_entity_1 = require("./company/company.entity");
+const core_1 = require("@nestjs/core");
+const jwt_auth_guard_1 = require("./auth/jwt-auth.guard");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -43,7 +45,17 @@ exports.AppModule = AppModule = __decorate([
             company_module_1.CompanyModule
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [
+            app_service_1.AppService,
+            {
+                provide: core_1.APP_GUARD,
+                useClass: jwt_auth_guard_1.JwtAuthGuard,
+            },
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: common_1.ClassSerializerInterceptor,
+            }
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

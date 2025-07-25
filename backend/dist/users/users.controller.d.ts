@@ -6,4 +6,7 @@ export declare class UsersController {
     getHi(): {
         message: string;
     };
+    getProfile(user: any): Promise<{
+        user: any;
+    }>;
 }

@@ -13,6 +13,8 @@ export declare class User {
     phoneNumber?: string;
     country?: string;
     company?: Company;
+    refreshToken: string | null;
+    refreshTokenExpiresAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
 }

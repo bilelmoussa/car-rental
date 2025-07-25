@@ -19,6 +19,7 @@ const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 const bcrypt = require("bcrypt");
 const Role_1 = require("./Role");
+const crypto = require("crypto");
 let UsersService = class UsersService {
     userRepository;
     constructor(userRepository) {
@@ -31,7 +32,15 @@ let UsersService = class UsersService {
         return this.userRepository.find();
     }
     async findByEmail(email) {
-        return await this.userRepository.findOne({ where: { email } });
+        return await this.userRepository.findOne({
+            where: { email },
+            select: {
+                id: true,
+                email: true,
+                password: true,
+                role: true,
+            }
+        });
     }
     async createCompanyOwnerUser(createCompanyOwnerDto) {
         const { email, password } = createCompanyOwnerDto;
@@ -46,6 +55,65 @@ let UsersService = class UsersService {
         });
         const savedUser = await this.userRepository.save(newUser);
         return savedUser;
+    }
+    async findById(id) {
+        const user = await this.userRepository.findOne({
+            where: { id }
+        });
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        return user;
+    }
+    async findByRefreshToken(refreshToken) {
+        const hashedToken = this.hashRefreshToken(refreshToken);
+        return this.userRepository.findOne({
+            where: {
+                refreshToken: hashedToken,
+            }
+        });
+    }
+    async updateLastLogin(id) {
+        await this.userRepository.update(id, {
+            updatedAt: new Date(),
+        });
+    }
+    async validatePassword(plainPassword, hashedPassword) {
+        return bcrypt.compare(plainPassword, hashedPassword);
+    }
+    async updateRefreshToken(userId, refreshToken) {
+        const updateData = {
+            refreshToken: refreshToken ? this.hashRefreshToken(refreshToken) : null,
+            refreshTokenExpiresAt: refreshToken ? this.getRefreshTokenExpiry() : null,
+        };
+        await this.userRepository.update(userId, updateData);
+    }
+    async validateRefreshToken(userId, refreshToken) {
+        const user = await this.findById(userId);
+        if (!user.refreshToken || !user.refreshTokenExpiresAt) {
+            return false;
+        }
+        if (new Date() > user.refreshTokenExpiresAt) {
+            await this.updateRefreshToken(userId, null);
+            return false;
+        }
+        const hashedToken = this.hashRefreshToken(refreshToken);
+        return user.refreshToken === hashedToken;
+    }
+    async revokeRefreshToken(userId) {
+        await this.updateRefreshToken(userId, null);
+    }
+    hashRefreshToken(token) {
+        return crypto.createHash('sha256').update(token).digest('hex');
+    }
+    getRefreshTokenExpiry() {
+        const expiryDays = 7;
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + expiryDays);
+        return expiry;
+    }
+    generateRefreshToken() {
+        return crypto.randomBytes(64).toString('hex');
     }
 };
 exports.UsersService = UsersService;
