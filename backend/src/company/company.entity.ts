@@ -29,4 +29,7 @@ export class Company {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({ type: 'text', nullable: true })
+  registrationNumber?: string;
 }

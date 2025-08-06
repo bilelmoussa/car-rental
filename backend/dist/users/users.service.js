@@ -51,7 +51,7 @@ let UsersService = class UsersService {
             password: hashedPassword,
             email: email.toLowerCase(),
             gender: createCompanyOwnerDto.gender,
-            role: Role_1.Role.CompanyOwner,
+            role: Role_1.Role.UNASSIGNED,
         });
         const savedUser = await this.userRepository.save(newUser);
         return savedUser;

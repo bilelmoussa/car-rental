@@ -1,4 +1,4 @@
-import { Body, Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get, UseGuards } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { CurrentUser } from "src/common/decorators/current-user-decorator";
@@ -14,11 +14,6 @@ export class UsersController {
   @Get("/")
   findAll() {
     return this.userService.findAllUser();
-  }
-
-  @Get("/hi")
-  getHi() {
-    return { message: "Hello Bilel from docker" };
   }
 
   @Get('profile')

@@ -28,7 +28,7 @@ export class User {
   @Column({ type: "enum", enum: Gender })
   gender: Gender;
 
-  @Column({ type: "enum", enum: Role, default: Role.Customer })
+  @Column({ type: "enum", enum: Role, default: Role.CUSTOMER })
   role: Role;
 
   @Column({ select: false })
@@ -54,6 +54,9 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   @Exclude()
   refreshTokenExpiresAt: Date | null;
+
+  @Column({ type: 'boolean', default: false })
+  emailVerified: boolean
 
   @CreateDateColumn()
   createdAt: Date;

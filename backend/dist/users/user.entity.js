@@ -29,6 +29,7 @@ let User = class User {
     company;
     refreshToken;
     refreshTokenExpiresAt;
+    emailVerified;
     createdAt;
     updatedAt;
 };
@@ -54,7 +55,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "gender", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "enum", enum: Role_1.Role, default: Role_1.Role.Customer }),
+    (0, typeorm_1.Column)({ type: "enum", enum: Role_1.Role, default: Role_1.Role.CUSTOMER }),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
 __decorate([
@@ -88,6 +89,10 @@ __decorate([
     (0, class_transformer_1.Exclude)(),
     __metadata("design:type", Object)
 ], User.prototype, "refreshTokenExpiresAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "emailVerified", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

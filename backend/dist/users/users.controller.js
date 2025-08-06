@@ -26,9 +26,6 @@ let UsersController = class UsersController {
     findAll() {
         return this.userService.findAllUser();
     }
-    getHi() {
-        return { message: "Hello Bilel from docker" };
-    }
     async getProfile(user) {
         return { user };
     }
@@ -41,12 +38,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)("/hi"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UsersController.prototype, "getHi", null);
 __decorate([
     (0, common_1.Get)('profile'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

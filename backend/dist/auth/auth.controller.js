@@ -128,7 +128,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)('admin-only'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(Role_1.Role.SuperAdmin),
+    (0, roles_decorator_1.Roles)(Role_1.Role.SUPERADMIN),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

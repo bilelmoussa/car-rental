@@ -15,6 +15,7 @@ export declare class User {
     company?: Company;
     refreshToken: string | null;
     refreshTokenExpiresAt: Date | null;
+    emailVerified: boolean;
     createdAt: Date;
     updatedAt: Date;
 }

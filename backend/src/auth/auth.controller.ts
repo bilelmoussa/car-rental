@@ -80,7 +80,7 @@ export class AuthController {
 
   @Get('admin-only')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.SuperAdmin)
+  @Roles(Role.SUPERADMIN)
   async adminOnlyEndPoint() {
     return { message: 'This is admin only content' };
   }

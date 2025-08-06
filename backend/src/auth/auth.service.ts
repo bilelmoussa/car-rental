@@ -24,10 +24,6 @@ export class AuthService {
       email,
       gender,
       password,
-      companyName,
-      address,
-      country,
-      phoneNumber,
     } = dto;
 
     const emailInUse = await this.usersService.findByEmail(email);
@@ -43,16 +39,6 @@ export class AuthService {
       gender,
       password,
     });
-
-    const newCompany = await this.companyService.createCompany({
-      name: companyName,
-      address,
-      country,
-      phoneNumber,
-      owner: newUser
-    })
-
-    console.log(newCompany)
 
     const tokens = this.generateTokens(newUser);
 

@@ -45,7 +45,7 @@ export class UsersService {
       password: hashedPassword,
       email: email.toLowerCase(),
       gender: createCompanyOwnerDto.gender,
-      role: Role.CompanyOwner,
+      role: Role.UNASSIGNED,
     });
 
     const savedUser = await this.userRepository.save(newUser);

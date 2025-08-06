@@ -49,33 +49,4 @@ export class B2BSignUpDto {
   })
   @IsEnum(Gender)
   gender: Gender;
-
-  @ApiProperty({
-    description: "The user's Company name"
-  })
-  @IsNotEmpty()
-  @IsString()
-  companyName: string;
-
-  @ApiProperty({
-    description: "The company's address"
-  })
-  @IsNotEmpty()
-  @IsString()
-  address: string;
-
-  @ApiProperty({
-    description: "The company's country",
-    example: "TN",
-  })
-  @IsNotEmpty()
-  @IsISO31661Alpha2()
-  country: string;
-
-  @ApiProperty({
-    description: "The company's phonenumber",
-  })
-  @IsOptional()
-  @IsPhoneNumber()
-  phoneNumber: string;
 }
