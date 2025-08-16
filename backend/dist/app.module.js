@@ -14,11 +14,11 @@ const auth_module_1 = require("./auth/auth.module");
 const users_module_1 = require("./users/users.module");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
-const user_entity_1 = require("./users/user.entity");
+const user_entity_1 = require("./users/entities/user.entity");
 const company_module_1 = require("./company/company.module");
 const company_entity_1 = require("./company/company.entity");
 const core_1 = require("@nestjs/core");
-const jwt_auth_guard_1 = require("./auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("./auth/guards/jwt-auth.guard");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;

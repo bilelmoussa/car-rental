@@ -1,5 +1,4 @@
-import { CreateCompanyOwner } from "./create-company-owner-dto";
-declare const UpdateUserDto_base: import("@nestjs/mapped-types").MappedType<Partial<CreateCompanyOwner>>;
+declare const UpdateUserDto_base: import("@nestjs/mapped-types").MappedType<Partial<unknown>>;
 export declare class UpdateUserDto extends UpdateUserDto_base {
 }
 export {};

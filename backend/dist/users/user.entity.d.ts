@@ -1,5 +1,5 @@
-import { Gender } from './Gender';
-import { Role } from './Role';
+import { Gender } from './enums/Gender';
+import { Role } from './enums/Role';
 import { Company } from 'src/company/company.entity';
 export declare class User {
     id: string;

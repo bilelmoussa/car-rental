@@ -6,8 +6,8 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { Gender } from './Gender';
-import { Role } from './Role';
+import { Gender } from '../enums/Gender';
+import { Role } from '../enums/Role';
 import { Exclude } from 'class-transformer';
 import { Company } from 'src/company/company.entity';
 

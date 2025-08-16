@@ -1,10 +1,10 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsString, Length, Matches } from "class-validator";
-import { Gender } from "./Gender";
+import { Gender } from "../enums/Gender";
 
 const passwordRegEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
 
-export class CreateCompanyOwner {
+export class UserDto {
   @IsNotEmpty()
   @IsString()
   @Length(2, 50)

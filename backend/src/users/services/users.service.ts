@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { Role } from './Role';
-import { CreateCompanyOwner } from './create-company-owner-dto';
+import { Role } from '../enums/Role';
+import { UserDto } from '../dtos/create-company-owner-dto';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -34,17 +34,17 @@ export class UsersService {
     });
   }
 
-  async createCompanyOwnerUser(createCompanyOwnerDto: CreateCompanyOwner) {
-    const { email, password } = createCompanyOwnerDto;
+  async creatUser(dto: UserDto): Promise<User> {
+    const { email, password } = dto;
 
     const hashedPassword = await this.hashData(password);
 
     const newUser = this.userRepository.create({
-      firstName: createCompanyOwnerDto.firstName,
-      lastName: createCompanyOwnerDto.lastName,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
       password: hashedPassword,
       email: email.toLowerCase(),
-      gender: createCompanyOwnerDto.gender,
+      gender: dto.gender,
       role: Role.UNASSIGNED,
     });
 

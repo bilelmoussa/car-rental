@@ -1,12 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsEnum, IsISO31661Alpha2, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, Length, Matches } from "class-validator";
-import { Gender } from "./Gender";
+import { IsEmail, IsEnum, IsISO31661Alpha2, IsNotEmpty, IsOptional, IsString, Length, Matches } from "class-validator";
+import { Gender } from "../enums/Gender";
 
 
 const passwordRegEx = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
 
-export class B2BSignUpDto {
+export class SignUpDto {
   @ApiProperty({
     description: "The user's first name",
     minLength: 2,

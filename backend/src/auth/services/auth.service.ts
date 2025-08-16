@@ -1,10 +1,9 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { CompanyService } from 'src/company/company.service';
-import { B2BSignUpDto } from 'src/users/signup.dto';
-import { User } from 'src/users/user.entity';
-import { UsersService } from 'src/users/users.service';
-import { JwtPayload } from './jwt.strategy';
-import { AuthResponseDto, LoginDto, RefreshResponseDto, RefreshTokenDto } from './auth.dto';
+import { SignUpDto } from 'src/users/dtos/signup.dto';
+import { User } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/services/users.service';
+import { JwtPayload } from '../strategies/jwt.strategy';
+import { AuthResponseDto, LoginDto, RefreshResponseDto, RefreshTokenDto } from '../dtos/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -12,12 +11,11 @@ import { ConfigService } from '@nestjs/config';
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly companyService: CompanyService,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) { }
 
-  async signupB2b(dto: B2BSignUpDto) {
+  async signup(dto: SignUpDto): Promise<AuthResponseDto> {
     const {
       firstName,
       lastName,
@@ -32,7 +30,7 @@ export class AuthService {
       throw new BadRequestException("User with this email already exists");
     }
 
-    const newUser = await this.usersService.createCompanyOwnerUser({
+    const newUser = await this.usersService.creatUser({
       firstName,
       lastName,
       email,
@@ -54,7 +52,9 @@ export class AuthService {
 
     await this.usersService.updateLastLogin(user.id);
 
-    return this.generateTokens(user);
+    const res = this.generateTokens(user);
+
+    return res;
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto): Promise<RefreshResponseDto> {
