@@ -1,17 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
+import { UserInput } from '../types/user.type';
 import * as bcrypt from 'bcrypt';
-import { Role } from '../enums/Role';
-import { UserDto } from '../dtos/create-company-owner-dto';
-import * as crypto from 'crypto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
+import { isEmail, isUUID } from 'class-validator';
+import { UserUpdate } from '../types/user-update.type';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
   ) { }
 
   hashData(data: string) {
@@ -22,9 +23,29 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async update(userId: string, updateData: UserUpdate): Promise<User> {
+    if (!isUUID(userId)) {
+      throw new BadRequestException('Invalid UUID');
+    }
+
+    const res = await this.userRepository.update(userId, updateData);
+
+    if (res.affected === 0) {
+      throw new BadRequestException('User not found!');
+    }
+
+    return await this.findById(userId);
+  }
+
+  async findPasswordByEmail(email: string): Promise<User | null> {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    if (!normalizedEmail || !isEmail(normalizedEmail)) {
+      throw new BadRequestException('Invalid email format');
+    }
+
     return await this.userRepository.findOne({
-      where: { email },
+      where: { email: normalizedEmail },
       select: {
         id: true,
         email: true,
@@ -34,26 +55,49 @@ export class UsersService {
     });
   }
 
-  async creatUser(dto: UserDto): Promise<User> {
-    const { email, password } = dto;
+  async findUserByEmail(email: string): Promise<User | null> {
+    const normalizedEmail = email.toLowerCase().trim();
 
-    const hashedPassword = await this.hashData(password);
+    if (!normalizedEmail || !isEmail(normalizedEmail)) {
+      throw new BadRequestException('Invalid email format');
+    }
 
-    const newUser = this.userRepository.create({
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      password: hashedPassword,
-      email: email.toLowerCase(),
-      gender: dto.gender,
-      role: Role.UNASSIGNED,
+    return await this.userRepository.findOne({
+      where: { email: normalizedEmail },
     });
+  }
 
-    const savedUser = await this.userRepository.save(newUser);
+  async createUser(dto: UserInput): Promise<User> {
+    try {
+      const { email, password } = dto;
 
-    return savedUser;
+      const hashedPassword = await this.hashData(password);
+
+      const newUser = this.userRepository.create({
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        password: hashedPassword,
+        email: email.toLowerCase().trim(),
+        gender: dto.gender,
+        role: dto.role,
+      });
+
+      const savedUser = await this.userRepository.save(newUser);
+
+      return savedUser;
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new ConflictException('Email already exists');
+      }
+      throw new InternalServerErrorException('Database error occurred');
+    }
   }
 
   async findById(id: string): Promise<User> {
+    if (!isUUID(id)) {
+      throw new BadRequestException('Invalid UUID');
+    }
+
     const user = await this.userRepository.findOne({
       where: { id }
     });
@@ -66,11 +110,10 @@ export class UsersService {
   }
 
   async findByRefreshToken(refreshToken: string): Promise<User | null> {
-    const hashedToken = this.hashRefreshToken(refreshToken);
 
     return this.userRepository.findOne({
       where: {
-        refreshToken: hashedToken,
+        refreshToken: refreshToken,
       }
     })
   }
@@ -85,48 +128,15 @@ export class UsersService {
     return bcrypt.compare(plainPassword, hashedPassword)
   }
 
-  async updateRefreshToken(userId: string, refreshToken: string | null): Promise<void> {
-    const updateData: Partial<User> = {
-      refreshToken: refreshToken ? this.hashRefreshToken(refreshToken) : null,
-      refreshTokenExpiresAt: refreshToken ? this.getRefreshTokenExpiry() : null,
-    };
+  async findRefreshTokenExpireAt(userId: string): Promise<Date | null> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: {
+        refreshTokenExpiresAt: true,
+      }
+    });
 
-    await this.userRepository.update(userId, updateData);
-  }
-
-  async validateRefreshToken(userId: string, refreshToken: string): Promise<boolean> {
-    const user = await this.findById(userId);
-
-    if (!user.refreshToken || !user.refreshTokenExpiresAt) {
-      return false;
-    }
-
-    if (new Date() > user.refreshTokenExpiresAt) {
-      await this.updateRefreshToken(userId, null);
-      return false;
-    }
-
-    const hashedToken = this.hashRefreshToken(refreshToken);
-    return user.refreshToken === hashedToken;
-  }
-
-  async revokeRefreshToken(userId: string): Promise<void> {
-    await this.updateRefreshToken(userId, null);
-  }
-
-  private hashRefreshToken(token: string): string {
-    return crypto.createHash('sha256').update(token).digest('hex');
-  }
-
-  private getRefreshTokenExpiry(): Date {
-    const expiryDays = 7;
-    const expiry = new Date();
-    expiry.setDate(expiry.getDate() + expiryDays);
-    return expiry;
-  }
-
-  generateRefreshToken(): string {
-    return crypto.randomBytes(64).toString('hex');
+    return user?.refreshTokenExpiresAt ?? null;
   }
 
 }

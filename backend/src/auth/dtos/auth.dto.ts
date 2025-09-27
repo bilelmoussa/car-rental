@@ -19,6 +19,7 @@ export class RefreshTokenDto {
 export class AuthResponseDto {
   access_token: string;
   refresh_token: string;
+  refreshTokenExpireAt: Date | null;
   user: {
     id: string;
     email: string;

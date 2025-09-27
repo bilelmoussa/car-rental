@@ -19,6 +19,10 @@ async function bootstrap() {
     });
     swagger_1.SwaggerModule.setup("api-docs", app, document);
     app.useGlobalPipes(new common_1.ValidationPipe({ whitelist: true }));
+    app.enableCors({
+        origin: 'http://localhost:5173',
+        credentials: true,
+    });
     await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

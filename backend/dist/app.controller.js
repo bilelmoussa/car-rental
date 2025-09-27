@@ -20,15 +20,6 @@ let AppController = class AppController {
     getHello() {
         return this.appService.getHello();
     }
-    postHello() {
-        return 'fuck off';
-    }
-    getTest() {
-        return "testing neovim out!";
-    }
-    getListof() {
-        return "Heeealp me please!";
-    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -37,24 +28,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
 ], AppController.prototype, "getHello", null);
-__decorate([
-    (0, common_1.Get)("/get_hello"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AppController.prototype, "postHello", null);
-__decorate([
-    (0, common_1.Get)("/test_neovim"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AppController.prototype, "getTest", null);
-__decorate([
-    (0, common_1.Get)("/help"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AppController.prototype, "getListof", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService])

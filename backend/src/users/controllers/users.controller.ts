@@ -16,7 +16,7 @@ export class UsersController {
     return this.userService.findAllUser();
   }
 
-  @Get('profile')
+  @Get('current-user')
   @UseGuards(JwtAuthGuard)
   async getProfile(@CurrentUser() user: any) {
     return { user };

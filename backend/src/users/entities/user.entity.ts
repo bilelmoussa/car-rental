@@ -28,7 +28,7 @@ export class User {
   @Column({ type: "enum", enum: Gender })
   gender: Gender;
 
-  @Column({ type: "enum", enum: Role, default: Role.CUSTOMER })
+  @Column({ type: "enum", enum: Role, default: Role.UNASSIGNED })
   role: Role;
 
   @Column({ select: false })

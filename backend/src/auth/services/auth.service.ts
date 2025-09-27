@@ -6,6 +6,8 @@ import { JwtPayload } from '../strategies/jwt.strategy';
 import { AuthResponseDto, LoginDto, RefreshResponseDto, RefreshTokenDto } from '../dtos/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import * as crypto from 'crypto';
+import { Role } from 'src/users/enums/Role'
 
 @Injectable()
 export class AuthService {
@@ -14,6 +16,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) { }
+
 
   async signup(dto: SignUpDto): Promise<AuthResponseDto> {
     const {
@@ -24,18 +27,19 @@ export class AuthService {
       password,
     } = dto;
 
-    const emailInUse = await this.usersService.findByEmail(email);
+    const emailInUse = await this.usersService.findPasswordByEmail(email);
 
     if (emailInUse) {
       throw new BadRequestException("User with this email already exists");
     }
 
-    const newUser = await this.usersService.creatUser({
+    const newUser = await this.usersService.createUser({
       firstName,
       lastName,
       email,
       gender,
       password,
+      role: Role.UNASSIGNED
     });
 
     const tokens = this.generateTokens(newUser);
@@ -52,7 +56,7 @@ export class AuthService {
 
     await this.usersService.updateLastLogin(user.id);
 
-    const res = this.generateTokens(user);
+    const res = await this.generateTokens(user);
 
     return res;
   }
@@ -60,13 +64,15 @@ export class AuthService {
   async refreshToken(refreshTokenDto: RefreshTokenDto): Promise<RefreshResponseDto> {
     const { refreshToken } = refreshTokenDto;
 
-    const user = await this.usersService.findByRefreshToken(refreshToken);
+    const hashedToken = this.hashRefreshToken(refreshToken);
+
+    const user = await this.usersService.findByRefreshToken(hashedToken);
 
     if (!user) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    const isValidRefreshToken = await this.usersService.validateRefreshToken(user.id, refreshToken);
+    const isValidRefreshToken = await this.validateRefreshToken(user.id, refreshToken);
 
     if (!isValidRefreshToken) {
       throw new UnauthorizedException('Invalid or expired refresh token');
@@ -81,16 +87,16 @@ export class AuthService {
   }
 
   async logout(userId: string): Promise<void> {
-    await this.usersService.revokeRefreshToken(userId);
+    await this.revokeRefreshToken(userId);
   }
 
   async logoutFromAllDevices(userId: string): Promise<void> {
     // this is for later use
-    await this.usersService.revokeRefreshToken(userId);
+    await this.revokeRefreshToken(userId);
   }
 
   private async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.usersService.findPasswordByEmail(email);
 
     if (!user) {
       return null;
@@ -117,13 +123,16 @@ export class AuthService {
       expiresIn: this.configService.get<string>('JWT_EXPIRATION', '15m'),
     });
 
-    const refreshToken = this.usersService.generateRefreshToken();
+    const refreshToken = this.generateRefreshToken();
 
-    await this.usersService.updateRefreshToken(user.id, refreshToken);
+    await this.updateRefreshToken(user.id, refreshToken);
+
+    const refreshTokenExpireAt = await this.usersService.findRefreshTokenExpireAt(user.id)
 
     return {
       access_token: accessToken,
       refresh_token: refreshToken,
+      refreshTokenExpireAt: refreshTokenExpireAt,
       user: {
         id: user.id,
         email: user.email,
@@ -149,4 +158,47 @@ export class AuthService {
     })
   }
 
+  // Refresh Token functions
+  private generateRefreshToken(): string {
+    return crypto.randomBytes(64).toString('hex');
+  }
+
+  private hashRefreshToken(token: string): string {
+    return crypto.createHash('sha256').update(token).digest('hex');
+  }
+
+  private getRefreshTokenExpiry(): Date {
+    const expiryDays = 7;
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + expiryDays);
+    return expiry;
+  }
+
+  async updateRefreshToken(userId: string, refreshToken: string | null): Promise<void> {
+    const updateData: Partial<User> = {
+      refreshToken: refreshToken ? this.hashRefreshToken(refreshToken) : null,
+      refreshTokenExpiresAt: refreshToken ? this.getRefreshTokenExpiry() : null,
+    };
+    await this.usersService.update(userId, updateData);
+  }
+
+  async validateRefreshToken(userId: string, refreshToken: string): Promise<boolean> {
+    const user = await this.usersService.findById(userId);
+
+    if (!user.refreshToken || !user.refreshTokenExpiresAt) {
+      return false;
+    }
+
+    if (new Date() > user.refreshTokenExpiresAt) {
+      await this.updateRefreshToken(userId, null);
+      return false;
+    }
+
+    const hashedToken = this.hashRefreshToken(refreshToken);
+    return user.refreshToken === hashedToken;
+  }
+
+  async revokeRefreshToken(userId: string): Promise<void> {
+    await this.updateRefreshToken(userId, null);
+  }
 } 
