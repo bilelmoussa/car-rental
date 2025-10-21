@@ -80,6 +80,8 @@ export class UsersService {
         email: email.toLowerCase().trim(),
         gender: dto.gender,
         role: dto.role,
+        emailVerified: false,
+        isActive: true,
       });
 
       const savedUser = await this.userRepository.save(newUser);
@@ -110,7 +112,6 @@ export class UsersService {
   }
 
   async findByRefreshToken(refreshToken: string): Promise<User | null> {
-
     return this.userRepository.findOne({
       where: {
         refreshToken: refreshToken,

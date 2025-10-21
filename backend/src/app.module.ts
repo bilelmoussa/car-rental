@@ -10,6 +10,10 @@ import { CompanyModule } from './company/company.module';
 import { Company } from './company/company.entity';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { CarsModule } from './cars/cars.module';
+import { CarModelModule } from './car-model/car-model.module';
+import { CarModel } from './car-model/car-model.entity';
+import { Car } from './cars/cars.entity';
 
 
 @Module({
@@ -24,15 +28,17 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
       database: process.env.POSTGRES_DATABASE,
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
-      entities: [User, Company],
-      migrations: ['/migrations/*.ts'],
-      synchronize: false,
+      entities: [User, Company, CarModel, Car],
+      // migrations: ['/migrations/*.ts'],
+      synchronize: true,
       logging: false,
       autoLoadEntities: true,
     }),
     AuthModule,
     UsersModule,
-    CompanyModule
+    CompanyModule,
+    CarsModule,
+    CarModelModule
   ],
   controllers: [AppController],
   providers: [

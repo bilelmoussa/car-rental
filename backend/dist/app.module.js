@@ -19,6 +19,10 @@ const company_module_1 = require("./company/company.module");
 const company_entity_1 = require("./company/company.entity");
 const core_1 = require("@nestjs/core");
 const jwt_auth_guard_1 = require("./auth/guards/jwt-auth.guard");
+const cars_module_1 = require("./cars/cars.module");
+const car_model_module_1 = require("./car-model/car-model.module");
+const car_model_entity_1 = require("./car-model/car-model.entity");
+const cars_entity_1 = require("./cars/cars.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -35,15 +39,16 @@ exports.AppModule = AppModule = __decorate([
                 database: process.env.POSTGRES_DATABASE,
                 username: process.env.POSTGRES_USER,
                 password: process.env.POSTGRES_PASSWORD,
-                entities: [user_entity_1.User, company_entity_1.Company],
-                migrations: ['/migrations/*.ts'],
-                synchronize: false,
+                entities: [user_entity_1.User, company_entity_1.Company, car_model_entity_1.CarModel, cars_entity_1.Car],
+                synchronize: true,
                 logging: false,
                 autoLoadEntities: true,
             }),
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
-            company_module_1.CompanyModule
+            company_module_1.CompanyModule,
+            cars_module_1.CarsModule,
+            car_model_module_1.CarModelModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [

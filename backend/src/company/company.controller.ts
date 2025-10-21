@@ -1,6 +1,10 @@
-import { Controller, Get, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/common/decorators/public.decorator';
+import { CreateCompanyDto } from './dtos/create-company.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CurrentUser } from 'src/common/decorators/current-user-decorator';
 
 @ApiTags("company")
 @Controller('company')
@@ -9,6 +13,7 @@ export class CompanyController {
     private readonly companyService: CompanyService,
   ) { }
 
+  @Public()
   @Get()
   @ApiOperation({ summary: "Get all companies" })
   @ApiResponse({
@@ -21,5 +26,11 @@ export class CompanyController {
   })
   async findAll() {
     return this.companyService.findAll();
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  async add(@Body() dto: CreateCompanyDto, @CurrentUser() user: any) {
+    return this.companyService.createCompany(dto, user.id);
   }
 }

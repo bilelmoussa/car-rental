@@ -1,3 +1,4 @@
+import { Company } from 'src/company/company.entity';
 import { Gender } from '../enums/Gender';
 import { Role } from '../enums/Role';
 
@@ -8,5 +9,9 @@ export type UserUpdate = {
   password?: string;
   gender?: Gender;
   role?: Role;
+  dateOfBirth?: Date;
+  phoneNumber?: string;
+  country?: string;
+  companyId?: string;
+  company?: Company;
 };
-
